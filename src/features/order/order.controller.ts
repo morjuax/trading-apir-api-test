@@ -7,10 +7,9 @@ export class OrderController {
   constructor(protected readonly orderService: OrderService) {
   }
 
-  @Post('/list')
+  @Post('/list-by-pair')
   @HttpCode(HttpStatus.OK)
-  async getPriceToPay(@Body() req: GetOrder) {
-    const resp =  await this.orderService.getOrders();
-    return resp;
+  async getOrderByPair(@Body() req: GetOrder) {
+    return await this.orderService.getOrdersAuth(req.pair);
   }
 }

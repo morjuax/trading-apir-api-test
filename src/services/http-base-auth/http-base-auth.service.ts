@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { ConfigUrlService } from '../../interfaces/config.interface';
+import { ConfigUrlService, ConfigUrlServiceAuth } from '../../interfaces/config.interface';
 import { firstValueFrom, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { getNonce } from '../../helpers/utils';
 import * as CryptoJS from 'crypto-js';
 
 @Injectable()
-export class HttpBaseService {
+export class HttpBaseAuthService {
   constructor(private http: HttpService) {}
 
   getHeaders(endPoint: string, body) {
-    const apiKey = '1PX0Dt9HDOo6KmduqN8EPdrRTFsVLUIatRO55CBcWua';
-    const apiSecret = 'ypZooOhORlo1WGfzxe5TO0d3hLosQWjaoZnpr8opbHq';
+    const apiKey = process.env.API_KEY;
+    const apiSecret = process.env.API_KEY_SECRET;
     const nonce = getNonce();
     const signature = `/api/${endPoint}${nonce}${JSON.stringify(body)}`;
     const sig = CryptoJS.HmacSHA384(signature, apiSecret).toString();
@@ -27,7 +27,7 @@ export class HttpBaseService {
   }
 
   async createRequest<T = any>(
-    uri: ConfigUrlService,
+    uri: ConfigUrlServiceAuth,
     data: any = {},
     params: any = {},
   ): Promise<T> {

@@ -1,29 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { HttpBaseService } from '../../services/http-base-authenticated/http-base.service';
 import { MethodHttp } from '../../enums/config.enums';
-import { ConfigUrlService } from '../../interfaces/config.interface';
+import { ConfigUrlService, ConfigUrlServiceAuth } from '../../interfaces/config.interface';
 import { CurrencyPair } from '../../enums/currency-pair.enum';
+// import { HttpBaseService } from '../../services/http-base/http-base.service';
+import { HttpBaseAuthService } from '../../services/http-base-auth/http-base-auth.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private httpBase: HttpBaseService) {
+  constructor(private httpBase: HttpBaseAuthService) {
   }
 
-  async getOrders(): Promise<any> {
-    const host = 'https://api.bitfinex.com';
-    const endpoint = `v2/auth/r/orders/t${CurrencyPair.BTCUSD}/hist`;
+  // async getOrders(pair: CurrencyPair): Promise<any> {
+  //   const url = `https://api-pub.bitfinex.com/v2/book/${pair}/P0?len=100`;
+  //
+  //   const uri: ConfigUrlService = {
+  //     url,
+  //     method: MethodHttp.GET,
+  //   };
+  //   return await this.httpBase.createRequest<any>(uri, {});
+  // }
 
-    const uri: ConfigUrlService = {
+  async getOrdersAuth(pair: CurrencyPair): Promise<any> {
+    const host = `https://api-pub.bitfinex.com`;
+    const endpoint = `v2/auth/r/orders/${pair}/hist`;
+
+    const uri: ConfigUrlServiceAuth = {
       host,
       endpoint,
       method: MethodHttp.POST,
     };
-    const bodyRequest = {
-      start: 1554002000000,
-      end: 1554002216000,
-      limit: 100,
-    };
-    const resp = await this.httpBase.createRequest<any>(uri, bodyRequest);
-    return resp;
+    const bodyRequest = { type: 'MARKET', all: 1 };
+    return await this.httpBase.createRequest<any>(uri, bodyRequest);
   }
 }

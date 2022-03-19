@@ -1,6 +1,13 @@
 import { MethodHttp } from '../enums/config.enums';
 
 export interface ConfigUrlService {
+  url: string;
+  method: MethodHttp;
+  headerToken?: string;
+  hash?: boolean;
+}
+
+export interface ConfigUrlServiceAuth {
   host: string;
   endpoint: string;
   method: MethodHttp;
