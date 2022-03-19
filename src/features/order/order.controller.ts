@@ -10,6 +10,8 @@ export class OrderController {
   @Post('/list-by-pair')
   @HttpCode(HttpStatus.OK)
   async getOrderByPair(@Body() req: GetOrder) {
-    return await this.orderService.getOrdersAuth(req.pair);
+    return await this.orderService.getOrdersRaw(req.pair);
   }
+
+
 }
