@@ -1,28 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { HttpBaseService } from '../../services/http-base/http-base.service';
-import { CurrencyPair, Precision } from '../../enums/currency-pair.enum';
-import { ConfigUrlService } from '../../interfaces/config.interface';
-import { MethodHttp } from '../../enums/config.enums';
 import { GetPriceDepth } from '../../dto/market.dto';
+import { OrderService } from '../order/order.service';
+import { OrderBookResponse } from '../../interfaces/book.interface';
+import { TypeOperation, TypePrice } from '../../enums/market.enum';
 
 @Injectable()
 export class MarketService {
-  constructor(private httpBase: HttpBaseService) {
+  constructor(
+    private httpBase: HttpBaseService,
+    private orderService: OrderService,
+  ) {}
+
+  async getPriceDepth(req: GetPriceDepth): Promise<any> {
+    const orders = await this.orderService.getOrders(req.pair);
+    if (req.typeOperation === TypeOperation.buy) {
+      const bidOrders = this.getBidOrders(orders);
+      const ordersBySize = bidOrders.filter((item) => item.count >= req.size);
+      return this.getMinPrice(ordersBySize);
+    }
+
+    if (req.typeOperation === TypeOperation.sell) {
+      const askOrders = this.getAskOrders(orders);
+      const ordersBySize = askOrders.filter((item) => item.count >= req.size);
+      console.log(ordersBySize, ordersBySize.shift());
+      return this.getMaxPrice(ordersBySize);
+    }
   }
 
-  async getPriceDepht(req: GetPriceDepth): Promise<any> {
-    const precision = Precision.R0;
-    const url = `https://api-pub.bitfinex.com/v2/book/${req.pair}/${precision}?len=25`;
-
-    const uri: ConfigUrlService = {
-      url,
-      method: MethodHttp.GET,
-    };
-    const resp = await this.httpBase.createRequest<any>(uri, {});
-    return this.mapData(resp);
+  getBidOrders(orders: OrderBookResponse[]) {
+    return orders.filter((order) => order.typePrice === TypePrice.bid);
   }
 
-  mapData(data) {
-    return data;
+  getAskOrders(orders: OrderBookResponse[]) {
+    return orders.filter((order) => order.typePrice === TypePrice.ask);
+  }
+
+  getMinPrice(orders: OrderBookResponse[]): number {
+    const prices = orders.map((item) => item.price);
+    return Math.min(...prices);
+  }
+
+  getMaxPrice(orders: OrderBookResponse[]): number {
+    const prices = orders.map((item) => item.price);
+    return Math.max(...prices);
   }
 }

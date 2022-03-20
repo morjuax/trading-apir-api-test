@@ -1,9 +1,14 @@
 export enum TypeOperation {
-  active = 'buy',
-  ask = 'sell',
+  buy = 'buy',
+  sell = 'sell',
 }
 
 export enum TypeOrder {
   active = 'active',
   passive = 'passive',
+}
+
+export enum TypePrice {
+  bid = 'bid',
+  ask = 'ask',
 }

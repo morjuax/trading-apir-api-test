@@ -10,5 +10,5 @@ export class GetPriceDepth {
   typeOperation: TypeOperation;
 
   @IsNumber()
-  size: number;
+  size: number; // cantidad de acciones o tokens
 }

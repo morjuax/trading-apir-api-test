@@ -3,16 +3,17 @@ import { MethodHttp } from '../../enums/config.enums';
 import { ConfigUrlService } from '../../interfaces/config.interface';
 import { CurrencyPair, Precision } from '../../enums/currency-pair.enum';
 import { HttpBaseService } from '../../services/http-base/http-base.service';
+import { OrderBookResponse } from '../../interfaces/book.interface';
 
 @Injectable()
 export class OrderService {
   constructor(private httpBase: HttpBaseService) {
   }
 
-  async getOrdersRaw(
+  async getOrders(
     pair: CurrencyPair,
     precision: Precision = Precision.P0,
-  ): Promise<any> {
+  ): Promise<OrderBookResponse[]> {
     const url = `https://api-pub.bitfinex.com/v2/book/${pair}/${precision}?len=25`;
 
     const uri: ConfigUrlService = {
@@ -30,7 +31,12 @@ export class OrderService {
   filterData(dataParsed) {
     return dataParsed.map((item) => {
       const type = item[2] > 0 ? 'bid' : 'ask';
-      return { id: item[0], price: item[1], [type]: item[2] };
+      return {
+        price: item[0],
+        count: item[1],
+        amount: item[2],
+        typePrice: type,
+      };
     });
   }
 }
