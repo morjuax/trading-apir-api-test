@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { ConfigUrlService, ConfigUrlServiceAuth } from '../../interfaces/config.interface';
+import { ConfigUrlServiceAuth } from '../../interfaces/config.interface';
 import { firstValueFrom, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { getNonce } from '../../helpers/utils';
@@ -25,6 +25,33 @@ export class HttpBaseAuthService {
       'bfx-signature': sig,
     };
   }
+
+  getHeadersBitTrex(service: ConfigUrlServiceAuth, body ) {
+    const apiKey = process.env.API_KEY;
+    const apiSecret = process.env.API_KEY_SECRET;
+    const { host, endpoint, method } = service;
+    const uri = `${host}/${endpoint}`;
+    const timestamp = new Date().getTime();
+    const contentHash = CryptoJS.SHA512(JSON.stringify(body)).toString(
+      CryptoJS.enc.Hex,
+    );
+    const subAccountId = '';
+    const preSign = [timestamp, uri, method, contentHash, subAccountId].join(
+      '',
+    );
+    const signature = CryptoJS.HmacSHA512(preSign, apiSecret).toString(
+      CryptoJS.enc.Hex,
+    );
+
+    return {
+      'Content-Type': 'application/json',
+      'Api-Key': apiKey,
+      'Api-Timestamp': timestamp,
+      'Api-Content-Hash': contentHash,
+      'Api-Signature': signature,
+    };
+  }
+
 
   async createRequest<T = any>(
     uri: ConfigUrlServiceAuth,

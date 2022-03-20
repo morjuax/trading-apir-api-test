@@ -9,8 +9,10 @@ export class OrderService {
   constructor(private httpBase: HttpBaseService) {
   }
 
-  async getOrdersRaw(pair: CurrencyPair): Promise<any> {
-    const precision = Precision.R0;
+  async getOrdersRaw(
+    pair: CurrencyPair,
+    precision: Precision = Precision.P0,
+  ): Promise<any> {
     const url = `https://api-pub.bitfinex.com/v2/book/${pair}/${precision}?len=25`;
 
     const uri: ConfigUrlService = {
