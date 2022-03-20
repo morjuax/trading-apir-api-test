@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { OrderModule } from './features/order/order.module';
 import { ConfigModule } from '@nestjs/config';
 import { MarketModule } from './features/market/market.module';
@@ -14,7 +12,7 @@ import { MarketModule } from './features/market/market.module';
     OrderModule,
     MarketModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

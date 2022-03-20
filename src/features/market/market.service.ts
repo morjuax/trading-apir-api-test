@@ -14,6 +14,7 @@ export class MarketService {
 
   async getPriceDepth(req: GetPriceDepth): Promise<any> {
     const orders = await this.orderService.getOrders(req.pair);
+
     if (req.typeOperation === TypeOperation.buy) {
       const bidOrders = this.getBidOrders(orders);
       const ordersBySize = bidOrders.filter((item) => item.count >= req.size);
@@ -23,7 +24,6 @@ export class MarketService {
     if (req.typeOperation === TypeOperation.sell) {
       const askOrders = this.getAskOrders(orders);
       const ordersBySize = askOrders.filter((item) => item.count >= req.size);
-      console.log(ordersBySize, ordersBySize.shift());
       return this.getMaxPrice(ordersBySize);
     }
   }
