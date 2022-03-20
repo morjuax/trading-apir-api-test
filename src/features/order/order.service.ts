@@ -14,7 +14,7 @@ export class OrderService {
     pair: CurrencyPair,
     precision: Precision = Precision.P0,
   ): Promise<OrderBookResponse[]> {
-    const url = `https://api-pub.bitfinex.com/v2/book/${pair}/${precision}?len=25`;
+    const url = `https://api-pub.bitfinex.com/v2/book/t${pair}/${precision}?len=25`;
 
     const uri: ConfigUrlService = {
       url,
